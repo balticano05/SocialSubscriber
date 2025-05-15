@@ -14,7 +14,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Subscriptions {
+public class Subscription {
 
     @Id
     private Long id;
@@ -28,7 +28,7 @@ public class Subscriptions {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Subscriptions that = (Subscriptions) o;
+        Subscription that = (Subscription) o;
         return Objects.equals(id, that.id) && Objects.equals(serviceName, that.serviceName) &&
                 Objects.equals(createdAt, that.createdAt);
     }

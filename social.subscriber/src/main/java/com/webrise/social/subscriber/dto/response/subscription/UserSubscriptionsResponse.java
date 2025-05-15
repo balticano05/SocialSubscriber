@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddSubscriptionResponse {
+public class UserSubscriptionsResponse {
 
     private Long subscriptionId;
 
