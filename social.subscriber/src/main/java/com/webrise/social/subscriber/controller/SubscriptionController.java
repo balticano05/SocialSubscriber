@@ -15,8 +15,8 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
 
     @GetMapping
-    public Flux<UserSubscriptionsResponse> findUserSubscriptions(){
-        subscriptionService.findUserSubscriptionsByUserId(id);
+    public Flux<UserSubscriptionsResponse> findUserSubscriptions(@PathVariable long id){
+        return subscriptionService.findUserSubscriptionsByUserId(id);
     }
 
     @PostMapping
@@ -24,7 +24,7 @@ public class SubscriptionController {
     public Mono<AddSubscriptionResponse> addSubscription(
             @PathVariable Long id,
             @RequestBody AddSubscriptionRequest addSubscriptionRequest){
-        subscriptionService.addSubscription(id, addSubscriptionRequest);
+        return subscriptionService.addSubscription(id, addSubscriptionRequest);
     }
 
     @DeleteMapping("/{sub_id}")

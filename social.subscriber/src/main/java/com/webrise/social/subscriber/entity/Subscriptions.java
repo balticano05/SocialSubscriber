@@ -1,14 +1,14 @@
 package com.webrise.social.subscriber.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Entity
-@Table(name = "users")
+@Table("subscriptions")
 @Getter
 @Setter
 @Builder
@@ -17,14 +17,12 @@ import java.util.Objects;
 public class Subscriptions {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name = "service_name")
+    @Column("service_name")
     private String serviceName;
 
-    @CreationTimestamp
-    @Column(name = "created_at")
+    @Column("created_at")
     private LocalDateTime createdAt;
 
     @Override
