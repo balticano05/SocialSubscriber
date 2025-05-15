@@ -1,5 +1,6 @@
 package com.webrise.social.subscriber.service.impl;
 
+import com.webrise.social.subscriber.dto.mapper.SubscriptionMapper;
 import com.webrise.social.subscriber.dto.request.subscription.AddSubscriptionRequest;
 import com.webrise.social.subscriber.dto.response.subscription.AddSubscriptionResponse;
 import com.webrise.social.subscriber.dto.response.subscription.UserSubscriptionsResponse;
@@ -51,22 +52,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     @Transactional
-    public Mono<AddSubscriptionResponse> addSubscription(Long id, AddSubscriptionRequest addSubscriptionRequest) {
+    public Mono<AddSubscriptionResponse> addSubscription(Long userId, AddSubscriptionRequest addSubscriptionRequest) {
 
-        Mono<User> userMono = userRepository.findById(id)
-                .switchIfEmpty(Mono.error(new UserNotFoundException(id)));
+        Mono<User> userMono = userRepository.findById(userId)
+                .switchIfEmpty(Mono.error(new UserNotFoundException(userId)));
 
         Mono<Subscription> subscriptionMono = Mono.just(
                 Subscription.builder()
                         .serviceName(addSubscriptionRequest.getServiceName())
                         .createdAt(LocalDateTime.now())
                         .build()
-
         ).flatMap(subscriptionRepository::save);
 
         return Mono.zip(userMono, subscriptionMono)
                 .flatMap(tuple -> {
-
                     User user = tuple.getT1();
                     Subscription subscription = tuple.getT2();
 
@@ -77,12 +76,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                     return userSubscriptionRepository.save(userSubscription)
                             .thenReturn(subscription);
                 })
-                .map(subscription -> AddSubscriptionResponse.builder()
-                        .subscriptionId(subscription.getId())
-                        .serviceName(subscription.getServiceName())
-                        .createdAt(subscription.getCreatedAt())
-                        .build()
-                );
+
+                .flatMap(SubscriptionMapper::mapSubscriptionToAddSubscriptionResponse);
     }
 
     @Override
