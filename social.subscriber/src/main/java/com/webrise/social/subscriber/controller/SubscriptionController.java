@@ -18,12 +18,12 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
 
     @GetMapping
-    public Flux<UserSubscriptionsResponse> findUserSubscriptions(@PathVariable Long id){
+    public Flux<UserSubscriptionsResponse> findUserSubscriptions(@PathVariable Long id) {
         return subscriptionService.findUserSubscriptionsByUserId(id);
     }
 
     @GetMapping("/top")
-    public Flux<UserSubscriptionsResponse> findTopThreeBySubscribersCount(){
+    public Flux<UserSubscriptionsResponse> findTopThreeBySubscribersCount() {
         return subscriptionService.findTopThreeBySubscribersCount();
     }
 
@@ -31,13 +31,13 @@ public class SubscriptionController {
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<AddSubscriptionResponse> addSubscription(
             @PathVariable Long id,
-            @RequestBody AddSubscriptionRequest addSubscriptionRequest){
+            @RequestBody AddSubscriptionRequest addSubscriptionRequest) {
         return subscriptionService.addSubscription(id, addSubscriptionRequest);
     }
 
     @DeleteMapping("/{sub_id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Long> deleteSubscriptionById(@PathVariable Long sub_id){
+    public Mono<Long> deleteSubscriptionById(@PathVariable Long sub_id) {
         return subscriptionService.deleteSubscriptionById(sub_id);
     }
 

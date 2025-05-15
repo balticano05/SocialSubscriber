@@ -14,21 +14,21 @@ public interface SubscriptionRepository extends R2dbcRepository<Subscription, Lo
     Mono<Subscription> findByServiceName(String serviceName);
 
     @Query("""
-        SELECT s.id, s.service_name, s.created_at
-        FROM subscriptions s
-        JOIN users_subscriptions us ON s.id = us.subscription_id
-        WHERE us.user_id = :userId
-        """)
+            SELECT s.id, s.service_name, s.created_at
+            FROM subscriptions s
+            JOIN users_subscriptions us ON s.id = us.subscription_id
+            WHERE us.user_id = :userId
+            """)
     Flux<Subscription> findAllByUserId(Long userId);
 
     @Query("""
-        SELECT s.id, s.service_name, s.created_at
-        FROM subscriptions s
-        JOIN users_subscriptions us ON s.id = us.subscription_id
-        GROUP BY s.id, s.service_name, s.created_at
-        ORDER BY COUNT(us.user_id) DESC
-        LIMIT 3
-        """)
+            SELECT s.id, s.service_name, s.created_at
+            FROM subscriptions s
+            JOIN users_subscriptions us ON s.id = us.subscription_id
+            GROUP BY s.id, s.service_name, s.created_at
+            ORDER BY COUNT(us.user_id) DESC
+            LIMIT 3
+            """)
     Flux<Subscription> findTopThreeBySubscribersCount();
 
 }

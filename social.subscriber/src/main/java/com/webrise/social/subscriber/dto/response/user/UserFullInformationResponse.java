@@ -1,7 +1,6 @@
 package com.webrise.social.subscriber.dto.response.user;
 
 import lombok.*;
-import org.springframework.data.relational.core.mapping.Column;
 
 import java.time.LocalDateTime;
 

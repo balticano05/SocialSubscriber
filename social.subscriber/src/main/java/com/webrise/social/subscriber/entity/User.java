@@ -7,7 +7,6 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Set;
 
 @Table("users")
 @Getter

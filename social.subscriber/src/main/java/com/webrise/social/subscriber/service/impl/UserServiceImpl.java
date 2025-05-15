@@ -8,18 +8,17 @@ import com.webrise.social.subscriber.dto.response.user.UserFullInformationRespon
 import com.webrise.social.subscriber.dto.response.user.UserUpdateResponse;
 import com.webrise.social.subscriber.entity.User;
 import com.webrise.social.subscriber.exception.UserNotFoundException;
-import com.webrise.social.subscriber.repository.SubscriptionRepository;
 import com.webrise.social.subscriber.repository.UserRepository;
-import com.webrise.social.subscriber.repository.UserSubscriptionRepository;
 import com.webrise.social.subscriber.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -28,17 +27,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<UserFullInformationResponse> findUserFullInformationById(Long id) {
-       return UserMapper.mapUserToUserFullInformationResponse(
-               userRepository.findById(id).switchIfEmpty(Mono.error(new UserNotFoundException(id)))
-       );
+
+        log.info("Fetching full information for userId={}", id);
+
+        return UserMapper.mapUserToUserFullInformationResponse(
+                userRepository.findById(id)
+                        .switchIfEmpty(Mono.error(new UserNotFoundException(id)))
+                        .doOnSuccess(user -> log.info("User found: id={}", id))
+                        .doOnError(error -> log.error("User not found: id={}", id))
+        );
     }
 
     @Override
     @Transactional
     public Mono<UserCreationResponse> createUser(UserCreationRequest userCreationRequest) {
 
-        User user = User
-                .builder()
+        log.info("Creating user with email='{}'", userCreationRequest.getEmail());
+
+        User user = User.builder()
                 .name(userCreationRequest.getName())
                 .email(userCreationRequest.getEmail())
                 .createdAt(LocalDateTime.now())
@@ -47,12 +53,16 @@ public class UserServiceImpl implements UserService {
 
         Mono<User> userMono = userRepository.save(user);
 
-        return UserMapper.mapUserToUserCreationResponse(userMono);
+        return UserMapper.mapUserToUserCreationResponse(userMono)
+                .doOnSuccess(response -> log.info("User created successfully: id={}", response.getId()))
+                .doOnError(error -> log.error("Error creating user", error));
     }
 
     @Override
     @Transactional
     public Mono<UserUpdateResponse> updateUserById(Long id, UserUpdateRequest userUpdateRequest) {
+
+        log.info("Updating user id={}", id);
 
         Mono<User> updatedUserMono = userRepository.findById(id)
                 .switchIfEmpty(Mono.error(new UserNotFoundException(id)))
@@ -67,16 +77,21 @@ public class UserServiceImpl implements UserService {
                     return userRepository.save(user);
                 });
 
-        return UserMapper.mapUserToUserUpdateResponse(updatedUserMono);
+        return UserMapper.mapUserToUserUpdateResponse(updatedUserMono)
+                .doOnSuccess(response -> log.info("User updated successfully: id={}", id))
+                .doOnError(error -> log.error("Error updating user id={}", id, error));
     }
 
     @Override
     @Transactional
     public Mono<Long> deleteUserById(Long id) {
 
-        userRepository.deleteById(id);
+        log.info("Deleting user with id={}", id);
 
-        return Mono.just(id);
+        return userRepository.deleteById(id)
+                .thenReturn(id)
+                .doOnSuccess(deletedId -> log.info("User deleted successfully: id={}", deletedId))
+                .doOnError(error -> log.error("Error deleting user id={}", id, error));
     }
 
 }

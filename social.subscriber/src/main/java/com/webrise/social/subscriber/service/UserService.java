@@ -5,8 +5,6 @@ import com.webrise.social.subscriber.dto.request.user.UserUpdateRequest;
 import com.webrise.social.subscriber.dto.response.user.UserCreationResponse;
 import com.webrise.social.subscriber.dto.response.user.UserFullInformationResponse;
 import com.webrise.social.subscriber.dto.response.user.UserUpdateResponse;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import reactor.core.publisher.Mono;
 
 public interface UserService {
